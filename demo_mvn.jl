@@ -1,6 +1,10 @@
-module test_mvn
+# Demo of multivariate normal HMM and Viterbi algorithm.
+include("models.jl")
+
+module demo_mvn
 using PyPlot
 using Distributions
+using MVNdiagHMM
 
 # settings
 m = 10
@@ -23,20 +27,15 @@ log_T = log(T)
 mu = round(4*randn(m,d),2)
 sig = round(sqrt(rand(InverseGamma(1,2),(m,d))),2)
 phi = [MvNormal(vec(mu[s,:]),vec(sig[s,:])) for s=1:m]
-log_q(x,D) = logpdf(D,x)
-qrnd(D) = rand(D)
-
-# code
-include("hmm.jl")
 
 # simulate data
-x,z0 = generate(n,log_pi,log_T,phi)
+x,z0 = MVNdiagHMM.generate(n,log_pi,log_T,phi)
 
 # compute optimal z
-z = viterbi(x,log_pi,log_T,phi)
+z = MVNdiagHMM.viterbi(x,log_pi,log_T,phi)
 
 # compute naive z using each obs separately
-z_naive = [indmax([log_q(x[i],phi[s]) for s=1:m]) for i=1:n]
+z_naive = [indmax([MVNdiagHMM.log_q(x[i],phi[s]) for s=1:m]) for i=1:n]
 
 # write to file
 #writedlm("piT.txt",[p'; zeros(m)'; T])

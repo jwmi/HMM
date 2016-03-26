@@ -1,6 +1,10 @@
-module test_normal
+# Demo of univariate normal HMM and Viterbi algorithm.
+include("models.jl")
+
+module demo_normal
 using PyPlot
 using Distributions
+using NormalHMM
 
 # settings
 m = 2
@@ -11,17 +15,12 @@ log_pi = log([.4,.6])
 log_T = log([.9 .1
              .2 .8])
 phi = [Normal(-1,1),Normal(1,1)]
-log_q(x,D) = logpdf(D,x)
-qrnd(D) = rand(D)
-
-# code
-include("hmm.jl")
 
 # simulate data
-x,z0 = generate(n,log_pi,log_T,phi)
+x,z0 = NormalHMM.generate(n,log_pi,log_T,phi)
 
 # compute optimal z
-z = viterbi(x,log_pi,log_T,phi)
+z = NormalHMM.viterbi(x,log_pi,log_T,phi)
 
 # display results
 println(mean(z.==z0))
@@ -37,5 +36,5 @@ ylim(-2,2)
 
 end # module
 
-nothing
+
 
