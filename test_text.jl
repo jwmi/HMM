@@ -32,13 +32,16 @@ using HMM
 using JLD
 
 # Settings
-m = 10  # number of hidden states to use
+m = 100 # 100 # number of hidden states to use
+n_max = 10000000  # maximum number of words to use
 from_file = false
-tolerance = 1e-2
-n_gen = 500
+run_profiler = false
+tolerance = 0.01  # 1e-3
+n_gen = 250
 
 # Read and preprocess data
-f = open("agrange.txt")
+f = open("eggs.txt")
+#f = open("cat.txt")
 s = readall(f)
 close(f)
 # Remove whitespace and some punctuation
@@ -49,11 +52,17 @@ s = replace(s,r"(\W) | (\W)",s" \1 ")
 s = strip(s)
 # Extract vocabulary
 words = split(s,' ')
+words = words[1:min(n_max,length(words))]  # Consider only the first n words
 vocabulary = sort(unique(words))
 V = length(vocabulary)  # size of vocabulary
 code = Dict(zip(vocabulary,1:V))  # mapping from words to indices
 # Encode the text as a numerical sequence
 x = Int[code[w] for w in words]
+n = length(x)
+
+# Save to file
+writedlm("x.txt",x)
+writedlm("code.txt",[(1:V) vocabulary],' ')
 
 function compose(x,vocabulary)
 	s = join(vocabulary[x]," ")
@@ -61,12 +70,27 @@ function compose(x,vocabulary)
 	return s
 end
 
+# Sanity check of forward and backward algorithm implementations
+log_pi = log(ones(m)/m)
+log_T = log(ones(m,m)/m)
+phi = [ones(V)/V for r = 1:m]
+G = HMM.forward(x,log_pi,log_T,phi)
+log_m = HMM.logsumexp(G[n,:])
+println(log_m)
+println(-n*log(V))
+
 
 # Estimate parameters using Baum-Welch
 if from_file
 	(log_pi,log_T,phi,log_m) = load("estimated_params.jld","params")
 else
-	log_pi,log_T,phi,log_m = HMM.estimate(x,m,tolerance)
+    if run_profiler
+        @profile log_pi,log_T,phi,log_m = HMM.estimate(x,m,tolerance)
+        Profile.print() #format = :flat)
+        Profile.clear()
+    else
+		log_pi,log_T,phi,log_m = HMM.estimate(x,m,tolerance)
+	end
 	save("estimated_params.jld","params",(log_pi,log_T,phi,log_m))
 end
 
