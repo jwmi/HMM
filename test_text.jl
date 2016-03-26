@@ -40,8 +40,8 @@ tolerance = 0.01  # 1e-3
 n_gen = 250
 
 # Read and preprocess data
-f = open("eggs.txt")
-#f = open("cat.txt")
+f = open("simple.txt")
+#f = open("eggs.txt")
 s = readall(f)
 close(f)
 # Remove whitespace and some punctuation
