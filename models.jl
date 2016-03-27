@@ -84,13 +84,31 @@ module MVNdiagHMM
 
 	# Initialize an array of emission distribution parameters
 	function phi_init(m,x)
-		@assert(false,"This function is not yet implemented.")
+		d = length(x[1])  # dimension
+		mu = mean(x)
+		sigma = Float64[std(Float64[xi[j] for xi in x]) for j=1:d]
+		randsig(d) = sqrt(rand(InverseGamma(1,1),d))
+		phi = [MvNormal(randn(d).*sigma+mu, randsig(d).*sigma) for s=1:m]
 	end
 
 	# Maximum likelihood estimate of array of emission distribution
 	# parameters using data x with weights gamma.
 	function phi_max!(phi,x,gamma)
-	    @assert(false,"This function is not yet implemented.")
+	    m = length(phi)
+	    n = length(x)
+		d = length(x[1])  # dimension
+	    for s = 1:m
+	         weights = gamma[:,s] / sum(gamma[:,s])
+	         mu = zeros(d)
+	         for j = 1:n
+	         	mu += weights[j]*x[j]
+	         end
+	         sigma2 = zeros(d)
+	         for j = 1:n
+	         	sigma2 += weights[j]*(x[j]-mu).*(x[j]-mu)
+	         end
+             phi[s] = MvNormal(mu,sqrt(sigma2))
+	    end
 	end
 
 	# Core HMM code

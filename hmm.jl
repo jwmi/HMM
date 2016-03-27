@@ -108,7 +108,8 @@ function forward(x,log_pi,log_T,phi)
             G[j,s] = logsumexp(l)
         end
     end
-    return G
+    log_m = logsumexp(G[n,:])  # log(p(x_{1:n}))
+    return G,log_m
 end
 
 # Run the backward algorithm to compute log(p(x_{j+1:n}|z_j)) for each j, z_j.
@@ -150,13 +151,13 @@ function estimate(x,m,tolerance)
     log_m_old = 0.0
     n_iterations = 0
 
+    println("\nEstimating parameters using Baum-Welch...")
     while abs(log_m - log_m_old) > tolerance
         log_m_old = log_m
 
         # E-step: compute gamma and delta
-        G = forward(x,log_pi,log_T,phi)
+        G,log_m = forward(x,log_pi,log_T,phi)
         H = backward(x,log_pi,log_T,phi)
-        log_m = logsumexp(G[n,:])  # log(p(x_{1:n}))
         for j = 1:n
             for r = 1:m
                 gamma[j,r] = exp(G[j,r] + H[j,r] - log_m)
@@ -181,7 +182,7 @@ function estimate(x,m,tolerance)
         @assert(log_m > log_m_old)
 
         n_iterations += 1
-        #println(n_iterations, " ", log_m)
+        println(n_iterations, " ", log_m)
     end
     return log_pi,log_T,phi,log_m
 end

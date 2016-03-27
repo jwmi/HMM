@@ -1,4 +1,4 @@
-# Demo of multivariate normal HMM and Viterbi algorithm.
+# Demo of multivariate normal HMM using Viterbi algorithm and Baum-Welch.
 include("models.jl")
 
 module demo_mvn
@@ -10,6 +10,7 @@ using MVNdiagHMM
 m = 10
 n = 1000
 d = 5
+tolerance = 1e-3
 
 srand(1)
 
@@ -38,15 +39,28 @@ z = MVNdiagHMM.viterbi(x,log_pi,log_T,phi)
 z_naive = [indmax([MVNdiagHMM.log_q(x[i],phi[s]) for s=1:m]) for i=1:n]
 
 # write to file
-#writedlm("piT.txt",[p'; zeros(m)'; T])
-#writedlm("musig.txt",[mu; zeros(d)'; sig])
+#writedlm("pi_T.txt",[p'; zeros(m)'; T])
+#writedlm("mu_sig.txt",[mu; zeros(d)'; sig])
 #writedlm("x.txt",[x[i][j] for i=1:n, j=1:d])
 #writedlm("z_true.txt",z0)
 
-# display results
-println(mean(z.==z0))
-println(mean(z_naive.==z0))
+# estimate parameters
+log_pi_est,log_T_est,phi_est,log_m_est = MVNdiagHMM.estimate(x,m,tolerance)
 
+# compute log marginal likelihood under the true parameters for comparison
+G,log_m = MVNdiagHMM.forward(x,log_pi,log_T,phi)
+
+# display results
+println("\nViterbi percent correct:")
+println(mean(z.==z0))
+println("\nNaive percent correct:")
+println(mean(z_naive.==z0))
+println("\nLog marginal likelihood under true parameters:")
+println(log_m)
+println("\nLog marginal likelihood under estimated parameters:")
+println(log_m_est)
+
+# plots
 x1 = Float64[xi[1] for xi in x]
 m10 = Float64[mu[s,1] for s in z0]
 m1p = Float64[mu[s,1] for s in z]
@@ -63,5 +77,5 @@ xlim(0,100)
 
 end # module
 
-nothing
+
 

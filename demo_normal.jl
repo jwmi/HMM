@@ -9,6 +9,7 @@ using NormalHMM
 # settings
 m = 2
 n = 1000
+tolerance = 1e-3
 
 # parameters
 log_pi = log([.4,.6])
@@ -22,9 +23,8 @@ x,z0 = NormalHMM.generate(n,log_pi,log_T,phi)
 # compute optimal z
 z = NormalHMM.viterbi(x,log_pi,log_T,phi)
 
-# estimate params
-tolerance = 1e-3
-log_pi_est,log_T_est,phi_est,log_m = NormalHMM.estimate(x,m,tolerance)
+# estimate parameters
+log_pi_est,log_T_est,phi_est,log_m_est = NormalHMM.estimate(x,m,tolerance)
 
 # display results
 println("\nViterbi percent correct:")
