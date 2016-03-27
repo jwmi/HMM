@@ -2,8 +2,7 @@
 Julia implementation of hidden Markov models
 
 ## Features
-- Handles continuous or discrete observations
-- Handles discrete hidden states only
+- Works with continuous or discrete observations
 - Customizable emission distributions
 - Pre-implemented emission distribution models:
   - Discrete (on a finite set {1,...,K})
@@ -17,7 +16,7 @@ Julia implementation of hidden Markov models
 - Baum-Welch algorithm (expectation-maximization) for parameter estimation
 - Generate data from an HMM
 
-## Attribution and licensing
+## Citation and licensing
 
 If you use this software in your research, please cite:<br>
 Jeffrey W. Miller (2016). *Lecture Notes on Advanced Stochastic Modeling*. Duke University, Durham, NC.
