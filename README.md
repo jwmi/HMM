@@ -21,6 +21,8 @@ Julia implementation of hidden Markov models
 If you use this software in your research, please cite:<br>
 Jeffrey W. Miller (2016). *Lecture Notes on Advanced Stochastic Modeling*. Duke University, Durham, NC.
 
+This software was written as part of the "Advanced Stochastic Modeling" STA531 course at Duke University, Spring 2016.
+
 Copyright (c) 2016 Jeffrey W. Miller. 
 This software is released under the MIT License (see LICENSE).
 
