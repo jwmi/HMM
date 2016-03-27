@@ -1,4 +1,10 @@
-# Hidden Markov models
+# Core functions for hidden Markov models
+
+# Copyright (c) 2016 Jeffrey W. Miller
+# This software is released under the MIT License.
+# If you use this software in your research, please cite:
+# 
+#   Jeffrey W. Miller (2016). Lecture Notes on Advanced Stochastic Modeling. Duke University, Durham, NC.
 
 # This code assumes the following have been defined:
 #   log_q = function such that log_q(x_t,phi[z_t]) = log p(x_t | Z_t = z_t), where phi is a vector of parameters.
@@ -175,7 +181,7 @@ function estimate(x,m,tolerance)
         @assert(log_m > log_m_old)
 
         n_iterations += 1
-        println(n_iterations, " ", log_m)
+        #println(n_iterations, " ", log_m)
     end
     return log_pi,log_T,phi,log_m
 end

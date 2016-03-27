@@ -1,3 +1,10 @@
+# Hidden Markov models
+
+# Copyright (c) 2016 Jeffrey W. Miller
+# This software is released under the MIT License.
+# If you use this software in your research, please cite:
+# 
+#   Jeffrey W. Miller (2016). Lecture Notes on Advanced Stochastic Modeling. Duke University, Durham, NC.
 
 # HMM with discrete emission distributions, assumed to be on {1,...,K}.
 module DiscreteHMM
@@ -51,7 +58,14 @@ module NormalHMM
 	# Maximum likelihood estimate of array of emission distribution
 	# parameters using data x with weights gamma.
 	function phi_max!(phi,x,gamma)
-	    @assert(false,"This function is not yet implemented.")
+	    m = length(phi)
+	    n = length(x)
+	    for s = 1:m
+	         weights = gamma[:,s] / sum(gamma[:,s])
+             mu = dot(weights,x)
+             sigma = sqrt(dot(weights,(x-mu).*(x-mu)))
+             phi[s] = Normal(mu,sigma)
+	    end
 	end
 
 	# Core HMM code
